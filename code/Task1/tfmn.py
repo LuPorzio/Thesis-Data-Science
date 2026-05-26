@@ -1013,15 +1013,20 @@ def _(Optional, Path, df_anxiety_zscore, emo_draw, llm_df_agg, plt, sg):
         axes[1].set_title(f'High Anxiety\n({target_model}, Q{target_question})', fontsize=14, fontweight='bold')
         draw_flower_via_emoatlas(axes[2], llm_scores)
         axes[2].set_title(f'LLM\n({target_model}, Q{target_question})', fontsize=14, fontweight='bold')
-        plt.suptitle(f'Emotional Profile Comparison: {target_model[:25]}', fontsize=20, y=1.05, fontweight='bold')
+        plt.suptitle(f'Emotional Profile Comparison: {target_model[:25]} question {target_question}', fontsize=20, y=1.05, fontweight='bold')
         plt.tight_layout()
         if not out_dir:
             plt.show()
         else:
             san_model = target_model.replace('/', '-')
             plt.savefig(out_dir.joinpath(f'{san_model}_Q{target_question}_Triple.png'), bbox_inches='tight')
-    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'grok-4-1-fast-reasoning', 1)
-    return (plot_final_plutchik_comparison_triple_6,)
+
+    # Define the path OUTSIDE the function, with zero indentation
+    output_directory = Path(__file__).parent.parent / "figures"
+
+    # Call the function
+    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'grok-4-1-fast-reasoning', 1, out_dir=output_directory)
+    return output_directory, plot_final_plutchik_comparison_triple_6
 
 
 @app.cell
@@ -1045,14 +1050,209 @@ def _(df_anxiety_zscore, llm_df_agg, plot_final_plutchik_comparison_triple_6):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    # Anita 24B (Uncensored)
+    """)
+    return
+
+
+@app.cell
+def _(
+    df_anxiety_zscore,
+    llm_df_agg,
+    output_directory,
+    plot_final_plutchik_comparison_triple_6,
+):
+    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'Anita 24B (Uncensored)', 1, out_dir=output_directory)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # Granite 4 Tiny
+    """)
+    return
+
+
+@app.cell
+def _(
+    df_anxiety_zscore,
+    llm_df_agg,
+    output_directory,
+    plot_final_plutchik_comparison_triple_6,
+):
+    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'Granite 4 Tiny', 1, out_dir=output_directory)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # Magistral Small
+    """)
+    return
+
+
+@app.cell
+def _(
+    df_anxiety_zscore,
+    llm_df_agg,
+    output_directory,
+    plot_final_plutchik_comparison_triple_6,
+):
+    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'Magistral Small', 1, out_dir=output_directory)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # Ministral 3B
+    """)
+    return
+
+
+@app.cell
+def _(
+    df_anxiety_zscore,
+    llm_df_agg,
+    output_directory,
+    plot_final_plutchik_comparison_triple_6,
+):
+    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'Ministral 3B', 1, out_dir=output_directory)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # Ministral 14B (Reasoning)
+    """)
+    return
+
+
+@app.cell
+def _(
+    df_anxiety_zscore,
+    llm_df_agg,
+    output_directory,
+    plot_final_plutchik_comparison_triple_6,
+):
+    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'Ministral 14B (Reasoning)', 1, out_dir=output_directory)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # Mistral Small 3.2
+    """)
+    return
+
+
+@app.cell
+def _(
+    df_anxiety_zscore,
+    llm_df_agg,
+    output_directory,
+    plot_final_plutchik_comparison_triple_6,
+):
+    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'Mistral Small 3.2', 1, out_dir=output_directory)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # Phi-4 (Reasoning +)
+    """)
+    return
+
+
+@app.cell
+def _(
+    df_anxiety_zscore,
+    llm_df_agg,
+    output_directory,
+    plot_final_plutchik_comparison_triple_6,
+):
+    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'Phi-4 (Reasoning+)', 1, out_dir=output_directory)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # Qwen3.5 9B
+    """)
+    return
+
+
+@app.cell
+def _(
+    df_anxiety_zscore,
+    llm_df_agg,
+    output_directory,
+    plot_final_plutchik_comparison_triple_6,
+):
+    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'Qwen3.5 9B', 1, out_dir=output_directory)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # Qwen3 4B (Uncensored)
+    """)
+    return
+
+
+@app.cell
+def _(
+    df_anxiety_zscore,
+    llm_df_agg,
+    output_directory,
+    plot_final_plutchik_comparison_triple_6,
+):
+    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'Qwen3 4B (Uncensored)', 1, out_dir=output_directory)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # Qwen3 4B
+    """)
+    return
+
+
+@app.cell
+def _(
+    df_anxiety_zscore,
+    llm_df_agg,
+    output_directory,
+    plot_final_plutchik_comparison_triple_6,
+):
+    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'Qwen3 4B', 1, out_dir=output_directory)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     # Qwen3 4B (Thinking)
     """)
     return
 
 
 @app.cell
-def _(df_anxiety_zscore, llm_df_agg, plot_final_plutchik_comparison_triple_6):
-    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'Qwen3 4B (Thinking)', 1)
+def _(
+    df_anxiety_zscore,
+    llm_df_agg,
+    output_directory,
+    plot_final_plutchik_comparison_triple_6,
+):
+    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'Qwen3 4B (Thinking)', 1, out_dir=output_directory)
     return
 
 
@@ -1083,8 +1283,13 @@ def _(mo):
 
 
 @app.cell
-def _(df_anxiety_zscore, llm_df_agg, plot_final_plutchik_comparison_triple_6):
-    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'Mistral Small 4', 1)
+def _(
+    df_anxiety_zscore,
+    llm_df_agg,
+    output_directory,
+    plot_final_plutchik_comparison_triple_6,
+):
+    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'Mistral Small 4', 1, out_dir=output_directory)
     return
 
 
@@ -1115,8 +1320,13 @@ def _(mo):
 
 
 @app.cell
-def _(df_anxiety_zscore, llm_df_agg, plot_final_plutchik_comparison_triple_6):
-    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'DeepSeek Chat', 1)
+def _(
+    df_anxiety_zscore,
+    llm_df_agg,
+    output_directory,
+    plot_final_plutchik_comparison_triple_6,
+):
+    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'DeepSeek Chat', 1, out_dir=output_directory)
     return
 
 
@@ -1301,7 +1511,7 @@ def _(main_table, plt, sns):
 
 @app.cell
 def _(Path, create_df_viz_diff_z, pd, plt, sns):
-    def plot_difference_z_new(q, func, hue, palette, markers=["o", "s"], path=None):
+    def plot_difference_z_new(q, func, hue, palette, title, markers=["o", "s"], path=None):
         df = func(q)
 
         # 5. Set up the plotting theme
@@ -1340,12 +1550,12 @@ def _(Path, create_df_viz_diff_z, pd, plt, sns):
 
             # C. Add the Shaded Rejection Regions
             # Left rejection region (-2.6 to -1.645)
-            ax.axvspan(-2.6, -1.645, color='gray', alpha=0.08, zorder=0) # Faint background
-            ax.axvspan(-2.6, -1.645, facecolor='none', edgecolor='gray', hatch='///', alpha=0.4, zorder=0) # Shading/hatch
+            ax.axvspan(-1.645, 1.645, color='gray', alpha=0.08, zorder=0) # Faint background
+            ax.axvspan(-1.645, 1.645, facecolor='none', edgecolor='gray', hatch='///', alpha=0.4, zorder=0) # Shading/hatch
 
             # Right rejection region (1.645 to 2.6)
-            ax.axvspan(1.645, 2.6, color='gray', alpha=0.08, zorder=0) # Faint background
-            ax.axvspan(1.645, 2.6, facecolor='none', edgecolor='gray', hatch='///', alpha=0.4, zorder=0) # Shading/hatch
+           # ax.axvspan(1.645, 2.6, color='gray', alpha=0.08, zorder=0) # Faint background
+            #ax.axvspan(1.645, 2.6, facecolor='none', edgecolor='gray', hatch='///', alpha=0.4, zorder=0) # Shading/hatch
 
             # D. Solid vertical axis at 0
             ax.axvline(0, color='black', linestyle='-', linewidth=1.5, zorder=3)
@@ -1364,7 +1574,7 @@ def _(Path, create_df_viz_diff_z, pd, plt, sns):
 
         # Tweak the overall layout to make room for a main title
         plt.subplots_adjust(top=0.9)
-        g.fig.suptitle(f"Emotion Z-Scores by Model and Anxiety Level (Question {q})", fontsize=20, weight="bold")
+        g.fig.suptitle(f"{title} (Question {q})", fontsize=20, weight="bold")
 
         if path:
             path = Path(path).resolve().absolute()
@@ -1372,7 +1582,7 @@ def _(Path, create_df_viz_diff_z, pd, plt, sns):
         plt.show()
 
     _palette = {"High Anxiety": "#d95f02", "Low Anxiety": "#fdae6b"}
-    plot_difference_z_new(1, create_df_viz_diff_z, "anxiety_level", _palette, path="code/figures/z_scores_anxiety_levels")
+    plot_difference_z_new(1, create_df_viz_diff_z, "anxiety_level", _palette, path="code/figures/z_scores_anxiety_levels",title="Emotion Z-Scores by Model and Anxiety Level")
     return (plot_difference_z_new,)
 
 
@@ -1409,8 +1619,8 @@ def _(main_table_gender, plot_difference_z_new):
 
         return df_long_final
 
-    _palette = {"Female": "#fb6f92", "Male": "#83c5be", "Other": "orange"}
-    plot_difference_z_new(1, create_df_viz_diff_z_gender, "gender_level", _palette, path="code/figures/z_scores_gender_levels.png")
+    _palette = {"Female": "#ff47da", "Male": "#238FFB", "Other": "orange"}
+    plot_difference_z_new(1, create_df_viz_diff_z_gender, "gender_level", _palette, path="code/figures/z_scores_gender_levels.png", title="Emotion Z-Scores by Model and Gender Group")
     return
 
 
@@ -1449,8 +1659,8 @@ def _(main_table_gender_anx, plot_difference_z_new):
 
         return df_long_final
 
-    _palette = {"High Anxiety Male": "#006d77", "Low Anxiety Male": "#83c5be"}
-    plot_difference_z_new(1, create_df_viz_diff_z_gender_male, "anxiety_level", _palette, path="code/figures/z_scores_anxiety_male.png")
+    _palette = {"High Anxiety Male": "#238FFB", "Low Anxiety Male": "#87C2FD"}
+    plot_difference_z_new(1, create_df_viz_diff_z_gender_male, "anxiety_level", _palette, path="code/figures/z_scores_anxiety_male.png", title="Emotion Z-Scores by Model and Anxiety Level for Male Gender")
     return
 
 
@@ -1481,8 +1691,8 @@ def _(main_table_gender_anx, plot_difference_z_new):
 
         return df_long_final
 
-    _palette = {"High Anxiety Female": "#fb6f92", "Low Anxiety Female": "#ffb3c6"}
-    plot_difference_z_new(1, create_df_viz_diff_z_gender_female, "anxiety_level", _palette, path="code/figures/z_scores_anxiety_female.png")
+    _palette = {"High Anxiety Female": "#F72684", "Low Anxiety Female": "#FB9DC7"}
+    plot_difference_z_new(1, create_df_viz_diff_z_gender_female, "anxiety_level", _palette, path="code/figures/z_scores_anxiety_female.png", title="Emotion Z-Scores by Model and Anxiety Level for Female Gender")
     return
 
 
@@ -1513,8 +1723,8 @@ def _(main_table_gender_anx, plot_difference_z_new):
 
         return df_long_final
 
-    _palette = {"High Anxiety Male": "#006d77", "High Anxiety Female": "#fb6f92"}
-    plot_difference_z_new(1, create_df_viz_diff_z_gender_high_anx, "gender_level", _palette, path="code/figures/High_Anxiety_Gender.png")
+    _palette = {"High Anxiety Male": "#333ebd", "High Anxiety Female": "#FF4080"}
+    plot_difference_z_new(1, create_df_viz_diff_z_gender_high_anx, "gender_level", _palette, path="code/figures/High_Anxiety_Gender.png", title="Emotion Z-Scores by Model and Gender Groups for High Anxiety Level")
     return
 
 
@@ -1545,8 +1755,8 @@ def _(main_table_gender_anx, plot_difference_z_new):
 
         return df_long_final
 
-    _palette = {"Low Anxiety Male": "#83c5be", "Low Anxiety Female": "#ffb3c6"}
-    plot_difference_z_new(1, create_df_viz_diff_z_gender_low_anx, "gender_level", _palette, path="code/figures/Low_Anxiety_Gender.png")
+    _palette = {"Low Anxiety Male": "#87C2FD", "Low Anxiety Female": "#FB9DC7"}
+    plot_difference_z_new(1, create_df_viz_diff_z_gender_low_anx, "gender_level", _palette, path="code/figures/Low_Anxiety_Gender.png", title="Emotion Z-Scores by Model and Gender Groups for Low Anxiety Level")
     return
 
 
@@ -1669,8 +1879,9 @@ def _(Path, np, plt):
     from matplotlib.patches import Patch
     from scipy.stats import gaussian_kde
 
-    color_human = '#058ED9' 
-    color_llm = '#FF99C8'
+
+    color_human = '#87C2FD' 
+    color_llm = '#fb6f92'
 
     def create_custom_ridgeline(
             df, 
