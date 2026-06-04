@@ -89,7 +89,8 @@ def _(regression_metrics_frame, regression_summary_frame, result):
 
 @app.cell
 def _(summary_df):
-    print(summary_df.to_latex(index=False))
+    print(summary_df.to_latex(index=False, formatters={'p_value': '{:.2e}'.format}, escape=True
+    ))
     return
 
 
@@ -241,7 +242,7 @@ def _(ax, df, gender_mean_sem_frame, pd, plt):
 
 @app.cell
 def _(display_df):
-    print(display_df.to_latex(index=False))
+    print(display_df.to_latex(index=False, float_format="%.e", escape=True))
     return
 
 
@@ -301,7 +302,11 @@ def _(gender_metrics_df, gender_summary_df, mo):
 
 @app.cell
 def _(gender_summary_df):
-    print(gender_summary_df.to_latex(index=False))
+    print(gender_summary_df.to_latex(
+        index=False,
+        formatters={'p_value': '{:.2e}'.format},
+        escape=True
+    ))
     return
 
 

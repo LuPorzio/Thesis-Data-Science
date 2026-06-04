@@ -381,10 +381,62 @@ def _(persona_merged_1):
 
 
 @app.cell
+def _(persona_merged_1):
+    persona_merged_1["mode"].nunique()
+    return
+
+
+@app.cell
 def _(df, persona_merged_1):
     df_anxiety_zscore = df.merge(persona_merged_1, on='run_id', how='inner')
     df_anxiety_zscore
     return (df_anxiety_zscore,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Creating high anxiety dataset
+    Filtering by persona with anxiety_level == high_anxiety
+    """)
+    return
+
+
+@app.cell
+def _(persona_merged_1):
+    df_anxiety_high = persona_merged_1[persona_merged_1["anxiety_level"] == "high_anxiety"]
+    df_anxiety_high.head()
+    return (df_anxiety_high,)
+
+
+@app.cell
+def _(Path, df_anxiety_high):
+    path_high_anx = Path("code/Task1/individual_tfmn/").resolve().absolute()
+    df_anxiety_high.to_csv(path_high_anx / "high_anxiety_personas.csv", index = False)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Creating low anxiety dataset
+    Filtering by persona with anxiety_level == low_anxiety
+    """)
+    return
+
+
+@app.cell
+def _(persona_merged_1):
+    df_anxiety_low = persona_merged_1[persona_merged_1["anxiety_level"] == "low_anxiety"]
+    df_anxiety_low.head()
+    return (df_anxiety_low,)
+
+
+@app.cell
+def _(Path, df_anxiety_low):
+    path_low_anx = Path("code/Task1/individual_tfmn/").resolve().absolute()
+    df_anxiety_low.to_csv(path_low_anx / "low_anxiety_personas.csv", index = False)
+    return
 
 
 @app.cell(hide_code=True)
@@ -642,7 +694,7 @@ def _(Optional, Path, emo_draw, fav_df_agg, hat_df_agg, llm_df_agg, plt, sg):
             plt.show()
         else:
             san_model = target_model.replace('/', '-')
-            plt.savefig(out_dir.joinpath(f'{san_model}_Q{target_question}_Triple.png'), bbox_inches='tight')
+            #plt.savefig(out_dir.joinpath(f'{san_model}_Q{target_question}_Triple.png'), bbox_inches='tight')
     plot_final_plutchik_comparison_triple(fav_df_agg, hat_df_agg, llm_df_agg, 'grok-4-1-fast-reasoning', 1)
     return (plot_final_plutchik_comparison_triple,)
 
@@ -1031,7 +1083,7 @@ def _(Optional, Path, df_anxiety_zscore, emo_draw, llm_df_agg, plt, sg):
 
 @app.cell
 def _(df_anxiety_zscore, llm_df_agg, plot_final_plutchik_comparison_triple_6):
-    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'grok-4-1-fast-reasoning', 2)
+    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'grok-4-1-fast-reasoning', 1)
     return
 
 
@@ -1326,13 +1378,13 @@ def _(
     output_directory,
     plot_final_plutchik_comparison_triple_6,
 ):
-    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'DeepSeek Chat', 1, out_dir=output_directory)
+    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'DeepSeek Chat', 2, out_dir=output_directory)
     return
 
 
 @app.cell
 def _(df_anxiety_zscore, llm_df_agg, plot_final_plutchik_comparison_triple_6):
-    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'DeepSeek Chat', 2)
+    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'DeepSeek Chat', 1)
     return
 
 
@@ -1353,6 +1405,18 @@ def _(mo):
     mo.md(r"""
     # Summary Table For Anxiety Levels
     """)
+    return
+
+
+@app.cell
+def _(df_anxiety_zscore):
+    df_anxiety_zscore.head()
+    return
+
+
+@app.cell
+def _(main_table):
+    main_table.head()
     return
 
 

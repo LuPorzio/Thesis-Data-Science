@@ -218,6 +218,140 @@ def _(plt, run_closeness_summary, sns):
     return
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Closeness Centrality — Detailed View
+    Hierarchically clustered heatmap, per-model lollipop chart, and multi-panel summary for the closeness centrality feature.
+    """)
+    return
+
+
+@app.cell
+def _(closeness_summary, pivot_model_term_matrix, plt, sns):
+    _per_model_top = (
+        closeness_summary.sort_values(["model_display", "mean_closeness"], ascending=[True, False])
+        .groupby("model_display")
+        .head(15)
+        .reset_index(drop=True)
+    )
+    _term_model_count = _per_model_top.groupby("term")["model_display"].nunique()
+    _heatmap_terms = sorted(
+        t for t in _per_model_top["term"].unique()
+        if _term_model_count[t] >= 2
+    )
+
+    if len(_heatmap_terms) < 3:
+        _fig, _ax = plt.subplots(figsize=(10, 4))
+        _ax.text(0.5, 0.5, "Fewer than 3 shared closeness terms across models", ha="center", va="center")
+        _out = _fig
+    else:
+        _matrix = pivot_model_term_matrix(closeness_summary, "mean_closeness", _heatmap_terms).fillna(0)
+        _g = sns.clustermap(
+            _matrix,
+            cmap="viridis",
+            method="average",
+            linewidths=0.5,
+            linecolor="white",
+            figsize=(max(10, len(_heatmap_terms) * 0.35 + 4), 9),
+            dendrogram_ratio=(0.1, 0.2),
+            # Moved to the right side of the figure (x=1.02)
+            cbar_pos=(1.02, 0.2, 0.03, 0.5), 
+            cbar_kws={"label": "Mean closeness"},
+        )
+        _g.fig.suptitle(
+            f"Closeness centrality — shared per-model top-15 terms ({len(_heatmap_terms)} terms)",
+            fontsize=18, y=1.02,
+        )
+        # Added bbox_inches="tight" so the new colorbar position isn't cut off
+        _g.savefig("code/figures/All_models_closeness_heatmap", bbox_inches="tight")
+        _out = _g.fig
+
+    _out
+    return
+
+
+@app.cell
+def _(closeness_summary, mo, model_picker, plt, sns):
+    _selected_model = model_picker.value
+
+    _model_data = (
+        closeness_summary[closeness_summary["model_display"] == _selected_model]
+        .nlargest(15, "mean_closeness")
+    )
+
+    _fig, _ax = plt.subplots(figsize=(10, 8))
+    _ax.hlines(
+        y=range(len(_model_data)), xmin=0, xmax=_model_data["mean_closeness"],
+        color="#6a9fb5", linewidth=3,
+    )
+    _ax.plot(
+        _model_data["mean_closeness"], range(len(_model_data)),
+        "o", markersize=10, color="#1f497d", alpha=0.8,
+    )
+    _ax.set_yticks(range(len(_model_data)))
+    _ax.set_yticklabels(_model_data["term"], fontsize=12)
+    _ax.set_xlabel("Mean closeness centrality", fontsize=12, fontweight="bold")
+    _ax.set_title(f"Top 15 closeness terms — {_selected_model}", fontsize=14, fontweight="bold")
+    _ax.invert_yaxis()
+    sns.despine(left=True, bottom=True, ax=_ax)
+    _ax.grid(axis="x", linestyle="--", alpha=0.5)
+    plt.tight_layout()
+    plt.savefig(f"code/figures/Lollipop_Closeness_{_selected_model.replace(' ', '_')}")
+
+    _table_data = (
+        closeness_summary[closeness_summary["model_display"] == _selected_model]
+        .nlargest(10, "mean_closeness")
+        [["term", "mean_closeness", "median_value", "std_value", "n_runs"]]
+        .round(5)
+    )
+    _table_data.columns = ["Term", "Mean", "Median", "Std", "Runs"]
+    _table = mo.ui.table(_table_data, label=f"Top 10 closeness terms — {_selected_model}")
+
+    mo.vstack([_fig, _table])
+    return
+
+
+@app.cell
+def _(closeness_summary, pivot_model_term_matrix, plt, sns, top_terms):
+    _model_means = (
+        closeness_summary.groupby("model_display")
+        .agg(mean_closeness=("mean_closeness", "mean"), std_closeness=("std_value", "mean"))
+        .sort_values("mean_closeness")
+        .reset_index()
+    )
+
+    _top15 = top_terms(closeness_summary, "mean_closeness", top_n=15)
+    _matrix = pivot_model_term_matrix(closeness_summary, "mean_closeness", _top15)
+
+    _fig, (_ax1, _ax2) = plt.subplots(1, 2, figsize=(18, 7), gridspec_kw={"width_ratios": [1, 1.5]})
+
+    _colors = plt.cm.viridis(
+        (_model_means["mean_closeness"] - _model_means["mean_closeness"].min())
+        / (_model_means["mean_closeness"].max() - _model_means["mean_closeness"].min() + 1e-10)
+    )
+    _ax1.barh(range(len(_model_means)), _model_means["mean_closeness"], color=_colors, edgecolor="white")
+    _ax1.set_yticks(range(len(_model_means)))
+    _ax1.set_yticklabels(_model_means["model_display"], fontsize=9)
+    _ax1.set_xlabel("Mean closeness (avg across terms)")
+    _ax1.set_title("Model-level mean closeness", fontsize=12)
+    _ax1.invert_yaxis()
+
+    sns.heatmap(
+        _matrix, cmap="viridis", linewidths=0.3, linecolor="white",
+        ax=_ax2, cbar_kws={"label": "Mean closeness"},
+    )
+    _ax2.set_title("Global top-15 closeness terms", fontsize=12)
+    _ax2.set_ylabel("")
+    _ax2.tick_params(axis="x", rotation=45)
+
+    plt.tight_layout()
+    plt.savefig("code/figures/Closeness_multi_panel_summary")
+
+    _fig
+    return
+
+
 @app.cell
 def _(hits_summary, pivot_model_term_matrix, plt, sns, top_terms):
     hits_terms = top_terms(hits_summary, "mean_hub_score", top_n=15)
@@ -259,7 +393,7 @@ def _(degree_summary, pivot_model_term_matrix, plt, sns, top_terms):
         ax=_ax
     )
 
-    _ax.set_title("Degree-hub frequency across models")
+    _ax.set_title("Degree-hub frequency across models", fontsize=23, y=1.02,)
     _ax.set_xlabel("Term")
     _ax.set_ylabel("Model")
 
@@ -673,7 +807,7 @@ def _(degree_summary, pivot_model_term_matrix, sns):
     )
     _g.fig.suptitle(
         "Degree hubs per model (top-15 per model, union set)",
-        fontsize=14, y=1.02,
+        fontsize=25, y=1.02,
     )
 
     # ADDED bbox_inches="tight" so the external legend isn't cropped out

@@ -194,7 +194,7 @@ def _(filtered_dataset, plt):
     # 5. Format the plot ensuring labels are readable
     # Rotate x-axis labels by 45 degrees so the long model names don't overlap
     # Add a descriptive legend
-    # tight_layout() ensures everything fits without getting cropped
+    #plt.tight_layout() #ensures everything fits without getting cropped
 
     plt.tight_layout()
     plt.gca()
@@ -236,6 +236,10 @@ def _(Path, df_1, plt):
     for _i, _word in enumerate(_target_words):
         _word_data = _proportions.xs(_word, level='cue_word')
         _word_data.plot(kind='bar', ax=_axes[_i], color=_colors, edgecolor='black', legend=False)
+    
+        # --- ADDED THIS LINE ---
+        _axes[_i].set_facecolor('#caf0f8') 
+    
         _axes[_i].grid(False)
         _axes[_i].text(0.5, 0.95, f'"{_word.capitalize()}" Valence by Model', transform=_axes[_i].transAxes, fontsize=14, fontweight='bold', va='top', ha='center', bbox=dict(facecolor='white', alpha=0.8, edgecolor='none', pad=3))
         _axes[_i].set_ylabel('Proportion (%)', labelpad=10)
@@ -264,6 +268,10 @@ def _(Path, df_1, plt):
     for _i, _word in enumerate(_target_words):
         _word_data = _proportions.xs(_word, level='cue_word')
         _word_data.plot(kind='bar', ax=_axes[_i], color=_colors, edgecolor='black', legend=False)
+    
+        # --- ADDED THIS LINE ---
+        _axes[_i].set_facecolor('#ffe5ec')
+    
         _axes[_i].grid(False)
         _axes[_i].text(0.5, 0.95, f'"{_word.capitalize()}" Valence by Model', transform=_axes[_i].transAxes, fontsize=14, fontweight='bold', va='top', ha='center', bbox=dict(facecolor='white', alpha=0.8, edgecolor='none', pad=3))
         _axes[_i].set_ylabel('Proportion (%)', labelpad=10)
@@ -292,6 +300,10 @@ def _(Path, df_1, plt):
     for _i, _word in enumerate(_target_words):
         _word_data = _proportions.xs(_word, level='cue_word')
         _word_data.plot(kind='bar', ax=_axes[_i], color=_colors, edgecolor='black', legend=False)
+    
+        # --- ADDED THIS LINE ---
+        _axes[_i].set_facecolor('#ffba78')
+    
         _axes[_i].grid(False)
         _axes[_i].text(0.5, 0.95, f'"{_word.capitalize()}" Valence by Model', transform=_axes[_i].transAxes, fontsize=14, fontweight='bold', va='top', ha='center', bbox=dict(facecolor='white', alpha=0.8, edgecolor='none', pad=3))
         _axes[_i].set_ylabel('Proportion (%)', labelpad=10)
@@ -320,6 +332,10 @@ def _(Path, df_1, plt):
     for _i, _word in enumerate(_target_words):
         _word_data = _proportions.xs(_word, level='cue_word')
         _word_data.plot(kind='bar', ax=_axes[_i], color=_colors, edgecolor='black', legend=False)
+    
+        # --- ADDED THIS LINE ---
+        _axes[_i].set_facecolor('#ffd991')
+    
         _axes[_i].grid(False)
         _axes[_i].text(0.5, 0.95, f'"{_word.capitalize()}" Valence by Model', transform=_axes[_i].transAxes, fontsize=14, fontweight='bold', va='top', ha='center', bbox=dict(facecolor='white', alpha=0.8, edgecolor='none', pad=3))
         _axes[_i].set_ylabel('Proportion (%)', labelpad=10)
