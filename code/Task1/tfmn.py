@@ -568,59 +568,6 @@ def _(fav_df_agg, hat_df_agg, np, plt):
 
 
 @app.cell
-def _(Path, plt):
-    import shapely.geometry as sg
-    from typing import Optional
-    import emoatlas.emotions as emo_draw
-
-    def plot_final_plutchik_comparison(fav_df, hat_df, target_model: str, target_question, out_dir: Optional[Path]=None):
-        fav_row = fav_df[(fav_df['model_name_x'] == target_model) & (fav_df['question_number'] == target_question)]
-        hat_row = hat_df[(hat_df['model_name_x'] == target_model) & (hat_df['question_number'] == target_question)]
-        if fav_row.empty or hat_row.empty:
-            return print(f'Data missing for {target_model} Q{target_question}!')
-        emotions = ['anger', 'anticipation', 'disgust', 'fear', 'joy', 'sadness', 'surprise', 'trust']
-        fav_scores = {emo: fav_row.iloc[0][f'z_scores_{emo}'] for emo in emotions}
-        hat_scores = {emo: hat_row.iloc[0][f'z_scores_{emo}'] for emo in emotions}
-        all_vals = list(fav_scores.values()) + list(hat_scores.values())
-        abs_limit = max(abs(min(all_vals)), abs(max(all_vals))) + 0.5
-        unified_rescale = (-abs_limit, abs_limit)
-        reject = (-1.645, 1.645)
-        fig, axes = plt.subplots(1, 2, figsize=(16, 8))
-
-        def draw_flower_via_emoatlas(ax, scores):
-            mmin = (reject[0] - unified_rescale[0]) / (unified_rescale[1] - unified_rescale[0]) + 0.15
-            mmax = (reject[1] - unified_rescale[0]) / (unified_rescale[1] - unified_rescale[0]) + 0.15
-            reject_circle = sg.Point(0, 0).buffer(mmax)
-            _ax.add_patch(emo_draw.PolygonPatch(reject_circle, fc='grey', ec=(0.5, 0.5, 0.5, 0.3), alpha=0.1, zorder=-2))
-            _ax.add_artist(plt.Circle((0, 0), mmax, color='grey', alpha=0.4, fill=False, zorder=-1, linestyle='--'))
-            inner_white = sg.Point(0, 0).buffer(mmin)
-            _ax.add_patch(emo_draw.PolygonPatch(inner_white, fc='white', ec=(0.5, 0.5, 0.5, 0), zorder=-1))
-            _ax.add_artist(plt.Circle((0, 0), mmin, color='grey', alpha=0.4, fill=False, zorder=-1, linestyle='--'))
-            for i in range(0, 110, 20):
-                _ax.add_artist(plt.Circle((0, 0), 0.15 + i / 100, color='grey', alpha=0.3, fill=False, zorder=-20))
-            for emo in emotions:
-                emo_draw._draw_emotion_petal(ax=_ax, emotion_score=scores[emo], emotion=emo, font='sans-serif', fontweight='light', fontsize=15, highlight='all', show_intensity_levels='none', show_coordinates=True, height_width_ratio=1, reject_range=reject, rescale=unified_rescale)
-            center_circle = sg.Point(0, 0).buffer(0.15)
-            _ax.add_patch(emo_draw.PolygonPatch(center_circle, fc='white', ec=(0.5, 0.5, 0.5, 0.3), alpha=1, zorder=15))
-            _ax.set_xlim(-1.6, 1.6)
-            _ax.set_ylim(-1.6, 1.6)
-            _ax.axis('off')
-        draw_flower_via_emoatlas(axes[0], fav_scores)
-        axes[0].set_title(f'Math Lovers\n({target_model}, Q{target_question})', fontsize=14, fontweight='bold')
-        draw_flower_via_emoatlas(axes[1], hat_scores)
-        axes[1].set_title(f'Math Haters\n({target_model}, Q{target_question})', fontsize=14, fontweight='bold')
-        plt.suptitle(f'Emotional Profile Comparison: {target_model[:25]}', fontsize=20, y=1.05, fontweight='bold')
-        plt.tight_layout()
-        if not out_dir:
-            plt.show()
-        else:
-            san_model = target_model.replace('/', '-')
-            plt.savefig(out_dir.joinpath(f'{san_model}_Q{target_question}.png'))
-
-    return Optional, emo_draw, plot_final_plutchik_comparison, sg
-
-
-@app.cell
 def _(QUESTIONS_TO_CONSIDER, df, z_scores_cols):
     # 1. Isolate LLM data for the considered questions
     llm_df = df[(df['mode'] == 'llm') & df['question_number'].isin(QUESTIONS_TO_CONSIDER)]
@@ -630,24 +577,12 @@ def _(QUESTIONS_TO_CONSIDER, df, z_scores_cols):
     return llm_df, llm_df_agg
 
 
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    # Emotion comparison for Math Lovers, Haters and LLM
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    ## grok-4-1-fast-reasoning
-    """)
-    return
-
-
 @app.cell
-def _(Optional, Path, emo_draw, fav_df_agg, hat_df_agg, llm_df_agg, plt, sg):
+def _(Path, fav_df_agg, hat_df_agg, llm_df_agg, plt):
+    import shapely.geometry as sg
+    from typing import Optional
+    import emoatlas.emotions as emo_draw
+
     def plot_final_plutchik_comparison_triple(fav_df, hat_df, llm_df, target_model: str, target_question, out_dir: Optional[Path]=None):
         fav_row = fav_df[(fav_df['model_name_x'] == target_model) & (fav_df['question_number'] == target_question)]
         hat_row = hat_df[(hat_df['model_name_x'] == target_model) & (hat_df['question_number'] == target_question)]
@@ -655,9 +590,9 @@ def _(Optional, Path, emo_draw, fav_df_agg, hat_df_agg, llm_df_agg, plt, sg):
         if fav_row.empty or hat_row.empty or llm_row.empty:
             return print(f'Data missing for {target_model} Q{target_question}!')
         emotions = ['anger', 'anticipation', 'disgust', 'fear', 'joy', 'sadness', 'surprise', 'trust']
-        fav_scores = {emo: fav_row.iloc[0][f'z_scores_{emo}'] for emo in emotions}
-        hat_scores = {emo: hat_row.iloc[0][f'z_scores_{emo}'] for emo in emotions}
-        llm_scores = {emo: llm_row.iloc[0][f'z_scores_{emo}'] for emo in emotions}
+        fav_scores = {emo: fav_row[f'z_scores_{emo}'].mean() for emo in emotions}
+        hat_scores = {emo: hat_row[f'z_scores_{emo}'].mean() for emo in emotions}
+        llm_scores = {emo: llm_row[f'z_scores_{emo}'].mean() for emo in emotions}
         all_vals = list(fav_scores.values()) + list(hat_scores.values()) + list(llm_scores.values())
         abs_limit = max(abs(min(all_vals)), abs(max(all_vals))) + 0.5
         unified_rescale = (-abs_limit, abs_limit)
@@ -696,7 +631,7 @@ def _(Optional, Path, emo_draw, fav_df_agg, hat_df_agg, llm_df_agg, plt, sg):
             san_model = target_model.replace('/', '-')
             #plt.savefig(out_dir.joinpath(f'{san_model}_Q{target_question}_Triple.png'), bbox_inches='tight')
     plot_final_plutchik_comparison_triple(fav_df_agg, hat_df_agg, llm_df_agg, 'grok-4-1-fast-reasoning', 1)
-    return (plot_final_plutchik_comparison_triple,)
+    return Optional, emo_draw, plot_final_plutchik_comparison_triple, sg
 
 
 @app.cell
@@ -901,18 +836,12 @@ def _(
 
 
 @app.cell
-def _(
-    Path,
-    QUESTIONS_TO_CONSIDER,
-    fav_df_agg,
-    hat_df_agg,
-    plot_final_plutchik_comparison,
-):
+def _(Path, QUESTIONS_TO_CONSIDER, fav_df_agg):
     if False:
         flower_dir = Path('./emotional_flowers')
         for _model in fav_df_agg['model_name_x'].unique():
             for question in QUESTIONS_TO_CONSIDER:
-                plot_final_plutchik_comparison(fav_df_agg, hat_df_agg, _model, question, flower_dir)
+                pass
     return
 
 
@@ -1025,6 +954,8 @@ def _(df_anxiety_zscore):
 
 @app.cell
 def _(Optional, Path, df_anxiety_zscore, emo_draw, llm_df_agg, plt, sg):
+
+
     def plot_final_plutchik_comparison_triple_6(human_df, llm_df, target_model: str, target_question, out_dir: Optional[Path]=None):
         fav_row = human_df[(human_df['model_name_x'] == target_model) & (human_df['question_number'] == target_question) & (human_df['anxiety_level'] == 'low_anxiety')]
         hat_row = human_df[(human_df['model_name_x'] == target_model) & (human_df['question_number'] == target_question) & (human_df['anxiety_level'] == 'high_anxiety')]
@@ -1032,8 +963,8 @@ def _(Optional, Path, df_anxiety_zscore, emo_draw, llm_df_agg, plt, sg):
         if fav_row.empty or hat_row.empty or llm_row.empty:
             return print(f'Data missing for {target_model} Q{target_question}!')
         emotions = ['anger', 'anticipation', 'disgust', 'fear', 'joy', 'sadness', 'surprise', 'trust']
-        fav_scores = {emo: fav_row.iloc[0][f'z_scores_{emo}'] for emo in emotions}
-        hat_scores = {emo: hat_row.iloc[0][f'z_scores_{emo}'] for emo in emotions}
+        fav_scores = {emo: fav_row[f'z_scores_{emo}'].mean() for emo in emotions}
+        hat_scores = {emo: hat_row[f'z_scores_{emo}'].mean() for emo in emotions}
         llm_scores = {emo: llm_row.iloc[0][f'z_scores_{emo}'] for emo in emotions}
         all_vals = list(fav_scores.values()) + list(hat_scores.values()) + list(llm_scores.values())
         abs_limit = max(abs(min(all_vals)), abs(max(all_vals))) + 0.5
@@ -1099,11 +1030,28 @@ def _(df_anxiety_zscore, llm_df_agg, plot_final_plutchik_comparison_triple_6):
     return
 
 
+@app.cell
+def _(df_anxiety_zscore, llm_df_agg, plot_final_plutchik_comparison_triple_6):
+    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'grok-4-1-fast-reasoning', 2)
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
     # Anita 24B (Uncensored)
     """)
+    return
+
+
+@app.cell
+def _(
+    df_anxiety_zscore,
+    llm_df_agg,
+    output_directory,
+    plot_final_plutchik_comparison_triple_6,
+):
+    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'Anita 24B (Uncensored)', 2, out_dir=output_directory)
     return
 
 
@@ -1310,7 +1258,7 @@ def _(
 
 @app.cell
 def _(df_anxiety_zscore, llm_df_agg, plot_final_plutchik_comparison_triple_6):
-    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'Qwen3 4B (Thinking)', 2)
+    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'Qwen3 4B (Thinking)', 1)
     return
 
 
@@ -1347,7 +1295,7 @@ def _(
 
 @app.cell
 def _(df_anxiety_zscore, llm_df_agg, plot_final_plutchik_comparison_triple_6):
-    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'Mistral Small 4', 2)
+    plot_final_plutchik_comparison_triple_6(df_anxiety_zscore, llm_df_agg, 'Mistral Small 4', 1)
     return
 
 
